@@ -1,0 +1,75 @@
+Genre table:
+SELECT DISTINCT genre FROM GENRES ORDER BY genre ASC;
+
+Movie:
+SELECT DISTINCT movieName FROM MOVIE ORDER BY movieName ASC;
+
+SELECT DISTINCT moviePrice FROM MOVIE ORDER BY moviePrice DESC;
+
+SELECT DISTINCT genre, AVG(moviePrice) FROM MOVIE GROUP BY genre;
+
+SELECT DISTINCT genre FROM movie GROUP BY genre ORDER BY genre DESC;
+
+Customer:
+SELECT DISTINCT customerName FROM CUSTOMER ORDER BY customerName ASC;
+
+Admin:
+SELECT DISTINCT username FROM ADMIN ORDER BY username ASC;
+
+Shopping Cart:
+SELECT DISTINCT orderId, AVG(price) FROM SHOPPINGCART ORDER BY orderId ASC;
+
+Payment:
+SELECT DISTINCT authen FROM PAYMENT ORDER BY authen ASC;
+
+Membership:
+SELECT DISTINCT points FROM MEMBERSHIP ORDER BY points DESC;
+
+Account:
+SELECT DISTINCT username, COUNT(points) FROM ACCOUNT GROUP BY username;
+
+Catalog:
+SELECT genre, COUNT(genre) FROM CATALOG GROUP BY genre ORDER BY genre;
+
+Wishlist:
+SELECT DISTINCT username, COUNT(username) FROM WISHLIST GROUP BY username;
+SELECT DISTINCT username FROM WISHLIST GROUP BY username;
+
+--JOIN Queries
+--ACTION movie that is less than 10 dollars
+SELECT MOVIE.movieName, MOVIE.moviePrice FROM MOVIE INNER JOIN GENRES ON MOVIE.genre = GENRES.genre WHERE GENRES.genre = 'Action' AND MOVIE.moviePrice < 10;
+
+--IF  there are 2 people with the same name
+SELECT CUSTOMER.customerName, CUSTOMER.customerId FROM CUSTOMER INNER JOIN ACCOUNT ON CUSTOMER.customerId = ACCOUNT.customerId WHERE ACCOUNT.customerId = 29 AND CUSTOMER.customerName = 'Eric Adams';
+
+--Display the average price of each genre
+SELECT GENRES.genre, AVG(MOVIE.moviePrice) AS averagePrice FROM GENRES LEFT JOIN MOVIE ON GENRES.genre = MOVIE.genre GROUP BY GENRES.genre;
+
+--View Queries
+--view ACTION movies that are less than 10 dollars
+CREATE VIEW WORKS_ON1
+AS
+SELECT MOVIE.movieName, MOVIE.moviePrice
+FROM MOVIE 
+INNER JOIN GENRES  ON MOVIE.genre = GENRES.genre
+WHERE GENRES.genre = 'Action' AND MOVIE.moviePrice < 10;
+
+--find a specific customer
+CREATE VIEW CUSTOMER_ACCOUNT_INFO
+AS
+SELECT C.customerName, C.customerId
+FROM CUSTOMER C
+INNER JOIN ACCOUNT A ON C.customerId = A.customerId
+WHERE A.customerId = 29 AND C.customerName = 'Eric Adams';
+
+--view the most expensive movie per genre
+CREATE VIEW MOST_EXPENSIVE_MOVIE_PER_GENRE
+AS
+SELECT GENRES.genre, MOVIE.movieName, MOVIE.moviePrice
+FROM GENRES
+LEFT JOIN MOVIE ON GENRES.genre = MOVIE.genre
+WHERE (MOVIE.moviePrice, GENRES.genre) IN (
+    SELECT MAX(moviePrice), genre
+    FROM MOVIE
+    GROUP BY genre
+);
